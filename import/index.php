@@ -1,9 +1,13 @@
 <?php
 
+require_once('class/TableController.php');
+require_once('class/ConnectionController.php');
+
 // RUN PHP SERVER LOCALLY
 // php -S localhost:8080
 
-function importFileContent($connection) {
+function importFileContent($connection)
+{
     $fp = gzopen("data/test.jsonl.gz", "r");
 
     $values = [];
@@ -16,7 +20,7 @@ function importFileContent($connection) {
 
     // query pre films
     // $query = "INSERT INTO films (code, title, did, date_prod, kind, len) VALUES " . implode(',', $values);
-    
+
     $query = "INSERT INTO films (code, title, did, date_prod, kind, len) VALUES " . implode(',', $values);
 
     // TODO
@@ -29,133 +33,18 @@ function importFileContent($connection) {
     // ('B6717', 'Tampopo', 110, '1985-02-10', 'Comedy'),
 }
 
-// ACCOUNTS
-function createAccountsTable($connection) {
-    $query = 'CREATE TABLE accounts (
-        id BIGINT PRIMARY KEY,
-        screen_name VARCHAR(200),
-        name  VARCHAR(200),
-        description TEXT,
-        followers_count INTEGER,
-        friends_count INTEGER,
-        statuses_count INTEGER
-    )';
-
-    pg_prepare($connection, 'create_table', $query);
-    $result = pg_execute($connection, 'create_table', []);
-
-    var_dump($result);
-}
-
-// COUNTRIES
-function createCountriesTable($connection) {
-    $query = 'CREATE TABLE countries (
-        id INTEGER PRIMARY KEY,
-        code VARCHAR(2),
-        name  VARCHAR(200)
-    )';
-
-    pg_prepare($connection, 'create_table1', $query);
-    $result = pg_execute($connection, 'create_table1', []);
-
-    var_dump($result);
-}
-
-// HASHTAGS
-function createHashtagsTable($connection) {
-    $query = 'CREATE TABLE hashtags (
-        id INTEGER PRIMARY KEY,
-        value TEXT
-    )';
-
-    pg_prepare($connection, 'create_table2', $query);
-    $result = pg_execute($connection, 'create_table2', []);
-
-    var_dump($result);
-}
-
-// TWEETS
-function createTweetsTable($connection) {
-    $query = 'CREATE TABLE tweets (
-        id VARCHAR(20) PRIMARY KEY,
-        content TEXT,
-        location GEOMETRY(POINT,4326),
-        retweet_count INTEGER,
-        favorite_count INTEGER,
-        happened_at TIMESTAMP WITH TIME ZONE,
-
-        author_id BIGINT
-            REFERENCES accounts(id)
-                ON DELETE CASCADE,
-
-        country_id INTEGER
-            REFERENCES countries(id)
-                ON DELETE CASCADE,
-
-        parent_id VARCHAR(20)
-            REFERENCES tweets(id)
-                ON DELETE CASCADE
-    )';
-
-    pg_prepare($connection, 'create_table3', $query);
-    $result = pg_execute($connection, 'create_table3', []);
-
-    var_dump($result);
-}
-
-// TWEET_MENTIONS
-function createTweetMentionsTable($connection) {
-    $query = 'CREATE TABLE tweet_mentions (
-        id INTEGER PRIMARY KEY,
-
-        account_id BIGINT
-            REFERENCES accounts(id)
-                ON DELETE CASCADE,
-
-        tweet_id VARCHAR(20)
-            REFERENCES tweets(id)
-                ON DELETE CASCADE
-    )';
-
-    pg_prepare($connection, 'create_table4', $query);
-    $result = pg_execute($connection, 'create_table4', []);
-
-    var_dump($result);
-}
-
-// TWEET_HASHTAGS
-function createTweetHashtagsTable($connection) {
-    $query = 'CREATE TABLE tweet_hashtags (
-        id INTEGER PRIMARY KEY,
-
-        hashtag_id INTEGER
-        REFERENCES hashtags(id)
-                ON DELETE CASCADE,
-
-        tweet_id VARCHAR(20)
-        REFERENCES tweets(id)
-                ON DELETE CASCADE
-    )';
-
-    pg_prepare($connection, 'create_table5', $query);
-    $result = pg_execute($connection, 'create_table5', []);
-
-    var_dump($result);
-}
-
-function createConnection() {
-    return pg_connect('host=localhost port=5432 dbname=postgres user=postgres password=postgres');
-}
-
-function main() {
-    $connection = createConnection();
+function main()
+{
     // importFileContent($connection);
-    createAccountsTable($connection);
-    createCountriesTable($connection);
-    createHashtagsTable($connection);
-    createTweetsTable($connection);
-    createTweetMentionsTable($connection);
-    createTweetHashtagsTable($connection);
+
+    echo '
+        <ul>
+            <li><a href="/create-tables.php">Create tables</a></li>
+            <li><a href="/delete-tables.php">Delete tables</a></li>
+            <li>------------------------------</li>
+            <li><a href="/import.php">Import</a></li>
+        </ul>
+    ';
 }
 
 main();
