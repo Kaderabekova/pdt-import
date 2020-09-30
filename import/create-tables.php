@@ -6,13 +6,14 @@ require_once('class/ConnectionController.php');
 function main()
 {
   $connection = ConnectionController::createConnection();
+  $table_controller = new TableController($connection);
 
-  TableController::createAccountsTable($connection);
-  TableController::createCountriesTable($connection);
-  TableController::createHashtagsTable($connection);
-  TableController::createTweetsTable($connection);
-  TableController::createTweetMentionsTable($connection);
-  TableController::createTweetHashtagsTable($connection);
+  $table_controller->createAccountsTable();
+  $table_controller->createCountriesTable();
+  $table_controller->createHashtagsTable();
+  $table_controller->createTweetsTable();
+  $table_controller->createTweetMentionsTable();
+  $table_controller->createTweetHashtagsTable();
 }
 
 main();

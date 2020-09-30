@@ -2,113 +2,115 @@
 
 class TableController
 {
+  private $connection;
 
-  // ACCOUNTS
-  public static function createAccountsTable($connection)
+  public function __construct($connection)
+  {
+    $this->connection = $connection;
+  }
+
+  /**
+   * Create accounts table
+   */
+  public function createAccountsTable()
   {
     $query = 'CREATE TABLE accounts (
-      id BIGINT PRIMARY KEY,
-      screen_name VARCHAR(200),
-      name  VARCHAR(200),
-      description TEXT,
-      followers_count INTEGER,
-      friends_count INTEGER,
-      statuses_count INTEGER
+      id                BIGINT PRIMARY KEY,
+      screen_name       VARCHAR(200),
+      name              VARCHAR(200),
+      description       TEXT,
+      followers_count   INTEGER,
+      friends_count     INTEGER,
+      statuses_count    INTEGER
     )';
 
-    pg_prepare($connection, 'create_table', $query);
-    $result = pg_execute($connection, 'create_table', []);
-
+    pg_query_params($this->connection, $query, []);
     echo 'Table `Accounts` created<br/>';
   }
 
-  // COUNTRIES
-  public static function createCountriesTable($connection)
+  /**
+   * Create countries table
+   */
+  public function createCountriesTable()
   {
     $query = 'CREATE TABLE countries (
-      id INTEGER PRIMARY KEY,
-      code VARCHAR(2),
+      id    SERIAL PRIMARY KEY,
+      code  VARCHAR(2),
       name  VARCHAR(200)
     )';
 
-    pg_prepare($connection, 'create_table1', $query);
-    $result = pg_execute($connection, 'create_table1', []);
-
+    pg_query_params($this->connection, $query, []);
     echo 'Table `Countries` created<br/>';
   }
 
-  // HASHTAGS
-  public static function createHashtagsTable($connection)
+  /**
+   * Create hashtags table
+   */
+  public function createHashtagsTable()
   {
     $query = 'CREATE TABLE hashtags (
-      id INTEGER PRIMARY KEY,
-      value TEXT
+      id      SERIAL PRIMARY KEY,
+      value   TEXT
     )';
 
-    pg_prepare($connection, 'create_table2', $query);
-    $result = pg_execute($connection, 'create_table2', []);
-
+    pg_query_params($this->connection, $query, []);
     echo 'Table `Hashtags` created<br/>';
   }
 
-  // TWEETS
-  public static function createTweetsTable($connection)
+  /**
+   * Create tweets table
+   */
+  public function createTweetsTable()
   {
     $query = 'CREATE TABLE tweets (
-      id VARCHAR(20) PRIMARY KEY,
-      content TEXT,
-      location GEOMETRY(POINT,4326),
-      retweet_count INTEGER,
-      favorite_count INTEGER,
-      happened_at TIMESTAMP WITH TIME ZONE,
-
+      id              VARCHAR(20) PRIMARY KEY,
+      content         TEXT,
+      location        GEOMETRY(POINT,4326),
+      retweet_count   INTEGER,
+      favorite_count  INTEGER,
+      happened_at     TIMESTAMP WITH TIME ZONE,
       author_id BIGINT
           REFERENCES accounts(id)
               ON DELETE CASCADE,
-
       country_id INTEGER
           REFERENCES countries(id)
               ON DELETE CASCADE,
-
       parent_id VARCHAR(20)
           REFERENCES tweets(id)
               ON DELETE CASCADE
     )';
 
-    pg_prepare($connection, 'create_table3', $query);
-    $result = pg_execute($connection, 'create_table3', []);
-
+    pg_query_params($this->connection, $query, []);
     echo 'Table `Tweets` created<br/>';
   }
 
-  // TWEET_MENTIONS
-  public static function createTweetMentionsTable($connection)
+  /**
+   * Create tweet mentions table
+   */
+  public function createTweetMentionsTable()
   {
     $query = 'CREATE TABLE tweet_mentions (
-      id INTEGER PRIMARY KEY,
-
+      id  SERIAL PRIMARY KEY,
       account_id BIGINT
           REFERENCES accounts(id)
               ON DELETE CASCADE,
-
       tweet_id VARCHAR(20)
           REFERENCES tweets(id)
               ON DELETE CASCADE
     )';
 
-    pg_prepare($connection, 'create_table4', $query);
-    $result = pg_execute($connection, 'create_table4', []);
-
+    pg_query_params($this->connection, $query, []);
     echo 'Table `Tweet mentions` created<br/>';
   }
 
-  // TWEET_HASHTAGS
-  public static function createTweetHashtagsTable($connection)
+  /**
+   * Create tween hashtags table
+   */
+  public function createTweetHashtagsTable()
   {
     $query = 'CREATE TABLE tweet_hashtags (
-      id INTEGER PRIMARY KEY,
-
-      hashtag_id INTEGER
+      id          SERIAL PRIMARY KEY,
+      hashtag_id  INTEGER
       REFERENCES hashtags(id)
               ON DELETE CASCADE,
 
@@ -117,19 +119,18 @@ class TableController
               ON DELETE CASCADE
     )';
 
-    pg_prepare($connection, 'create_table5', $query);
-    $result = pg_execute($connection, 'create_table5', []);
-
+    pg_query_params($this->connection, $query, []);
     echo 'Table `Tweet hashtags` created<br/>';
   }
 
-  public static function deleteTables($connection)
+  /**
+   * Delete all created tables
+   */
+  public function deleteTables()
   {
     $query = 'DROP TABLE accounts, countries, hashtags, tweets, tweet_hashtags, tweet_mentions';
 
-    pg_prepare($connection, 'drop_tables', $query);
-    $result = pg_execute($connection, 'drop_tables', []);
-
+    pg_query_params($this->connection, $query, []);
     echo 'Tables deleted';
   }
 }

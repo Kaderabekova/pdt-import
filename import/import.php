@@ -8,7 +8,7 @@ function main()
   $connection = ConnectionController::createConnection();
   $import_controller = new ImportController($connection);
 
-  $import_controller->import($connection);
+  $import_controller->import();
 }
 
 main();

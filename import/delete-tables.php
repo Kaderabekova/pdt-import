@@ -6,8 +6,9 @@ require_once('class/ConnectionController.php');
 function main()
 {
   $connection = ConnectionController::createConnection();
+  $table_controller = new TableController($connection);
 
-  TableController::deleteTables($connection);
+  $table_controller->deleteTables();
 }
 
 main();
