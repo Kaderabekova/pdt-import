@@ -62,7 +62,7 @@ class TableController
    */
   public function createTweetsTable()
   {
-    // TODO: Refactor ALL Foreign keys
+    // TODO: Refactor Foreign keys and parent_id
     $query = 'CREATE TABLE tweets (
       id              VARCHAR(20) PRIMARY KEY,
       content         TEXT,
@@ -71,26 +71,20 @@ class TableController
       favorite_count  INTEGER,
       happened_at     TIMESTAMP WITH TIME ZONE,
       author_id       BIGINT,
+        CONSTRAINT fk_author_id
+          FOREIGN KEY(author_id) 
+            REFERENCES accounts(id)
+              ON DELETE CASCADE,
       country_id      INTEGER,
-      parent_id       VARCHAR(20),
-      CONSTRAINT fk_author_id
-        FOREIGN KEY(author_id) 
-	        REFERENCES accounts(id),
-      CONSTRAINT fk_country_id
-        FOREIGN KEY(country_id) 
-	        REFERENCES countries(id),
-      CONSTRAINT fk_parent_id
-        FOREIGN KEY(parent_id) 
-	        REFERENCES tweets(id)
-      -- author_id BIGINT
-      --     REFERENCES accounts(id)
-      --         ON DELETE CASCADE,
-      -- country_id INTEGER
-      --     REFERENCES countries(id)
-      --         ON DELETE CASCADE,
-      -- parent_id VARCHAR(20)
-      --     REFERENCES tweets(id)
-      --         ON DELETE CASCADE
+        CONSTRAINT fk_country_id
+          FOREIGN KEY(country_id) 
+            REFERENCES countries(id)
+              ON DELETE CASCADE,
+      parent_id       VARCHAR(20)
+        -- CONSTRAINT fk_parent_id
+        --   FOREIGN KEY(parent_id) 
+        --     REFERENCES tweets(id)
+        --       ON DELETE CASCADE
     )';
 
     pg_query_params($this->connection, $query, []);
@@ -103,12 +97,17 @@ class TableController
   public function createTweetMentionsTable()
   {
     $query = 'CREATE TABLE tweet_mentions (
-      id  SERIAL PRIMARY KEY,
-      account_id BIGINT
-          REFERENCES accounts(id)
+      id              SERIAL PRIMARY KEY,
+      account_id      BIGINT,
+      tweet_id        VARCHAR(20),
+
+      CONSTRAINT fk_account_id
+          FOREIGN KEY(account_id) 
+            REFERENCES accounts(id)
               ON DELETE CASCADE,
-      tweet_id VARCHAR(20)
-          REFERENCES tweets(id)
+        CONSTRAINT fk_tweet_id
+          FOREIGN KEY(tweet_id) 
+            REFERENCES tweets(id)
               ON DELETE CASCADE
     )';
 
@@ -117,18 +116,21 @@ class TableController
   }
 
   /**
-   * Create tween hashtags table
+   * Create tweet hashtags table
    */
   public function createTweetHashtagsTable()
   {
     $query = 'CREATE TABLE tweet_hashtags (
       id          SERIAL PRIMARY KEY,
-      hashtag_id  INTEGER
-      REFERENCES hashtags(id)
+      hashtag_id  INTEGER,
+      tweet_id VARCHAR(20),
+      CONSTRAINT fk_hashtag_id
+          FOREIGN KEY(hashtag_id) 
+            REFERENCES hashtags(id)
               ON DELETE CASCADE,
-
-      tweet_id VARCHAR(20)
-      REFERENCES tweets(id)
+        CONSTRAINT fk_tweet_id
+          FOREIGN KEY(tweet_id)
+            REFERENCES tweets(id)
               ON DELETE CASCADE
     )';
 
