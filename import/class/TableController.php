@@ -62,6 +62,7 @@ class TableController
    */
   public function createTweetsTable()
   {
+    // TODO: Refactor ALL Foreign keys
     $query = 'CREATE TABLE tweets (
       id              VARCHAR(20) PRIMARY KEY,
       content         TEXT,
@@ -69,15 +70,27 @@ class TableController
       retweet_count   INTEGER,
       favorite_count  INTEGER,
       happened_at     TIMESTAMP WITH TIME ZONE,
-      author_id BIGINT
-          REFERENCES accounts(id)
-              ON DELETE CASCADE,
-      country_id INTEGER
-          REFERENCES countries(id)
-              ON DELETE CASCADE,
-      parent_id VARCHAR(20)
-          REFERENCES tweets(id)
-              ON DELETE CASCADE
+      author_id       BIGINT,
+      country_id      INTEGER,
+      parent_id       VARCHAR(20),
+      CONSTRAINT fk_author_id
+        FOREIGN KEY(author_id) 
+	        REFERENCES accounts(id),
+      CONSTRAINT fk_country_id
+        FOREIGN KEY(country_id) 
+	        REFERENCES countries(id),
+      CONSTRAINT fk_parent_id
+        FOREIGN KEY(parent_id) 
+	        REFERENCES tweets(id)
+      -- author_id BIGINT
+      --     REFERENCES accounts(id)
+      --         ON DELETE CASCADE,
+      -- country_id INTEGER
+      --     REFERENCES countries(id)
+      --         ON DELETE CASCADE,
+      -- parent_id VARCHAR(20)
+      --     REFERENCES tweets(id)
+      --         ON DELETE CASCADE
     )';
 
     pg_query_params($this->connection, $query, []);

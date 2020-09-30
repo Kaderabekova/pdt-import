@@ -33,34 +33,34 @@ class ImportController
       $tweet = json_decode($line, TRUE);
 
       // TODO: Remove - This prints only first row from file
-      echo '<pre>';
-      var_dump($tweet);
-      echo '</pre>';
-      die();
+      // echo '<pre>';
+      // var_dump($tweet);
+      // echo '</pre>';
+      // die();
 
       // Import account
-      // $account_id = $this->account_import->import($tweet['user']);
+      $account_id = $this->account_import->import($tweet['user']);
       // TODO: Check if following code works correctly
       // if (isset($tweet['retweeted_status']['user'])) {
       //   $retweeted_account_id = $this->account_import->import($tweet['retweeted_status']['user']);
       // }
 
       // Import country
-      // if (isset($tweet['place'])) {
-      //   $country_id = $this->country_import->import($tweet['place']);
-      // }
+      if (isset($tweet['place'])) {
+        $country_id = $this->country_import->import($tweet['place']);
+      }
 
       // Import hashtags
-      // if (isset($tweet['entities']['hashtags'])) {
-      //   foreach($tweet['entities']['hashtags'] as $hashtag) {
-      //     $hashtags_ids[] = $this->hashtag_import->import($hashtag);
-      //   }
-      // }
+      if (isset($tweet['entities']['hashtags'])) {
+        foreach($tweet['entities']['hashtags'] as $hashtag) {
+          $hashtags_ids[] = $this->hashtag_import->import($hashtag);
+        }
+      }
 
       // Import tweet
       $tweet_meta = [
-        'author_id' => 123,//$account_id,
-        'country_id' => 456,//$country_id,
+        'author_id' => $account_id,
+        'country_id' => $country_id,
         'parent_id' => isset($tweet['retweeted_status']) ? $tweet['retweeted_status']['id_str'] : null,
       ];
       $tweet_id = $this->tweet_import->import($tweet, $tweet_meta);
