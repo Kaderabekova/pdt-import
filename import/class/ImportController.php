@@ -41,9 +41,9 @@ class ImportController
       // Import account
       $account_id = $this->account_import->import($tweet['user']);
       // TODO: Check if following code works correctly
-      // if (isset($tweet['retweeted_status']['user'])) {
-      //   $retweeted_account_id = $this->account_import->import($tweet['retweeted_status']['user']);
-      // }
+      if (isset($tweet['retweeted_status']['user'])) {
+        $retweeted_account_id = $this->account_import->import($tweet['retweeted_status']['user']);
+      }
 
       // Import country
       if (isset($tweet['place'])) {
@@ -57,6 +57,28 @@ class ImportController
         }
       }
 
+
+      if (isset($tweet['retweeted_status'])) {
+        // Import retweet account
+        $retweet_account = $tweet['retweeted_status']['user'];
+        $retweet_account_id = $this->account_import->import($retweet_account);
+
+        // Import retweet country
+        $retweet_country_id = NULL;
+        if (isset($tweet['retweeted_status']['place'])) {
+          $retweet_country_id = $this->country_import->import($tweet['place']);
+        }
+        
+        // Import retweet parent
+        $retweet_tweet = $tweet['retweeted_status'];
+        $retweet_meta = [
+          'author_id' => $retweet_account_id,
+          'country_id' => $retweet_country_id,
+          'parent_id' => NULL
+        ];
+        $retweet_tweet_id = $this->tweet_import->import($retweet_tweet, $retweet_meta);
+      }
+
       // Import tweet
       $tweet_meta = [
         'author_id' => $account_id,
@@ -66,7 +88,7 @@ class ImportController
       $tweet_id = $this->tweet_import->import($tweet, $tweet_meta);
 
       // TODO: Remove
-      // die();
+      die();
     }
   }
 }

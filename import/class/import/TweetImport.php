@@ -33,12 +33,13 @@ class TweetImport extends BaseImport
    */
   private function createNewTweet(array $file_tweet, array $tweet_meta)
   {
-    // TODO: Finish this
+    // TODO: Fix coordinates creation
+    $coordinates = isset($file_tweet['coordinates']) ? "ST_GeomFromText('POINT({$file_tweet['coordinates'][1]} {$file_tweet['coordinates'][0]})', 4326)" : null;
     $query = "INSERT INTO tweets (id, content, location, retweet_count, favorite_count, happened_at, author_id, country_id, parent_id) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);";
     $query_params = [
       $file_tweet['id_str'],
-      $file_tweet['content'],
-      $file_tweet['location'],
+      $file_tweet['full_text'],
+      $coordinates,
       $file_tweet['retweet_count'],
       $file_tweet['favorite_count'],
       $file_tweet['happened_at'],
