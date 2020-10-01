@@ -50,7 +50,7 @@ class AccountImport extends BaseImport
         pg_query_params($this->connection, $query, $query_params);
 
         // TODO: Remove - Only for debugging purposes
-        echo "{$db_account['id']}: Updating column: {$column} from: {$db_account[$column]} to: {$file_account[$column]}<br/>";
+        // echo "{$db_account['id']}: Updating column: {$column} from: {$db_account[$column]} to: {$file_account[$column]}<br/>";
       }
     }
   }
@@ -73,6 +73,6 @@ class AccountImport extends BaseImport
     pg_query_params($this->connection, $query, $query_params);
 
     // TODO: Remove - Only for debugging purposes
-    echo "{$file_account['id']}: Inserted new account<br/>";
+    // echo "{$file_account['id']}: Inserted new account<br/>";
   }
 }

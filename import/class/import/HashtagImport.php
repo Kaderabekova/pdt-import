@@ -43,7 +43,7 @@ class HashtagImport extends BaseImport
     $parsed_result = json_decode(json_encode(pg_fetch_array($result)), TRUE);
     
     // TODO: Remove - Only for debugging purposes
-    echo "{$file_hashtag['text']}: Inserted new hashtag<br/>";
+    // echo "{$file_hashtag['text']}: Inserted new hashtag<br/>";
 
     return $parsed_result['id'];
   }

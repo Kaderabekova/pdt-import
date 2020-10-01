@@ -47,7 +47,7 @@ class CountryImport extends BaseImport
     $parsed_result = json_decode(json_encode(pg_fetch_array($result)), TRUE);
     
     // TODO: Remove - Only for debugging purposes
-    echo "{$file_country['country_code']}: Inserted new country<br/>";
+    // echo "{$file_country['country_code']}: Inserted new country<br/>";
 
     return $parsed_result['id'];
   }

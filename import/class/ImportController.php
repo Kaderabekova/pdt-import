@@ -57,7 +57,6 @@ class ImportController
         }
       }
 
-
       if (isset($tweet['retweeted_status'])) {
         // Import retweet account
         $retweet_account = $tweet['retweeted_status']['user'];
@@ -88,7 +87,7 @@ class ImportController
       $tweet_id = $this->tweet_import->import($tweet, $tweet_meta);
 
       // TODO: Remove
-      die();
+      // die();
     }
   }
 }
