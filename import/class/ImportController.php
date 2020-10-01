@@ -4,6 +4,8 @@ require_once('import/AccountImport.php');
 require_once('import/CountryImport.php');
 require_once('import/HashtagImport.php');
 require_once('import/TweetImport.php');
+require_once('import/TweetMentionsImport.php');
+require_once('import/TweetHashtagsImport.php');
 
 class ImportController
 {
@@ -12,6 +14,8 @@ class ImportController
   private $country_import;
   private $hashtag_import;
   private $tweet_import;
+  private $tweet_mentions_import;
+  private $tweet_hashtags_import;
 
   public function __construct($connection)
   {
@@ -20,6 +24,8 @@ class ImportController
     $this->country_import = new CountryImport($this->connection);
     $this->hashtag_import = new HashtagImport($this->connection);
     $this->tweet_import = new TweetImport($this->connection);
+    $this->tweet_mentions_import = new TweetMentionsImport($this->connection);
+    $this->tweet_hashtags_import = new TweetHashtagsImport($this->connection);
   }
 
   public function import()
@@ -34,7 +40,7 @@ class ImportController
 
       // TODO: Remove - This prints only first row from file
       // echo '<pre>';
-      // var_dump($tweet);
+      // var_dump($tweet['retweeted_status']);
       // echo '</pre>';
       // die();
 
@@ -67,8 +73,16 @@ class ImportController
         if (isset($tweet['retweeted_status']['place'])) {
           $retweet_country_id = $this->country_import->import($tweet['place']);
         }
+
+        // Import retweet hashtags
+        $retweet_hashtags_ids = [];
+        if (isset($tweet['retweeted_status']['entities']['hashtags'])) {
+          foreach($tweet['retweeted_status']['entities']['hashtags'] as $hashtag) {
+            $retweet_hashtags_ids[] = $this->hashtag_import->import($hashtag);
+          }
+        }
         
-        // Import retweet parent
+        // Import retweet tweet
         $retweet_tweet = $tweet['retweeted_status'];
         $retweet_meta = [
           'author_id' => $retweet_account_id,
@@ -76,6 +90,12 @@ class ImportController
           'parent_id' => NULL
         ];
         $retweet_tweet_id = $this->tweet_import->import($retweet_tweet, $retweet_meta);
+
+        // Import retweet tweet mentions
+        $this->tweet_mentions_import->import($retweet_tweet_id, $retweet_account_id);
+
+        // Import retweet tweet hashtags
+        $this->tweet_hashtags_import->import($retweet_tweet_id, $retweet_hashtags_ids);
       }
 
       // Import tweet
@@ -85,6 +105,12 @@ class ImportController
         'parent_id' => isset($tweet['retweeted_status']) ? $tweet['retweeted_status']['id_str'] : null,
       ];
       $tweet_id = $this->tweet_import->import($tweet, $tweet_meta);
+
+      // Import retweet tweet mentions
+      $this->tweet_mentions_import->import($tweet_id, $account_id);
+
+      // Import retweet tweet hashtags
+      $this->tweet_hashtags_import->import($tweet_id, $hashtags_ids);
 
       // TODO: Remove
       // die();

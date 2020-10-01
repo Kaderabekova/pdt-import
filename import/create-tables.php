@@ -8,6 +8,7 @@ function main()
   $connection = ConnectionController::createConnection();
   $table_controller = new TableController($connection);
 
+  $table_controller->deleteTables();
   $table_controller->createAccountsTable();
   $table_controller->createCountriesTable();
   $table_controller->createHashtagsTable();

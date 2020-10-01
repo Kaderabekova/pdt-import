@@ -146,6 +146,6 @@ class TableController
     $query = 'DROP TABLE accounts, countries, hashtags, tweets, tweet_hashtags, tweet_mentions';
 
     pg_query_params($this->connection, $query, []);
-    echo 'Tables deleted';
+    echo 'Tables deleted<br/>';
   }
 }
