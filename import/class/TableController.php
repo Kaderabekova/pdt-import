@@ -80,12 +80,8 @@ class TableController
           FOREIGN KEY(country_id) 
             REFERENCES countries(id)
               ON DELETE CASCADE,
-      parent_id       VARCHAR(20)
-        -- CONSTRAINT fk_parent_id
-        --   FOREIGN KEY(parent_id) 
-        --     REFERENCES tweets(id)
-        --       ON DELETE CASCADE
-    )';
+      parent_id       VARCHAR(20) REFERENCES tweets(id)
+    );';
 
     pg_query_params($this->connection, $query, []);
     echo 'Table `Tweets` created<br/>';
@@ -105,11 +101,11 @@ class TableController
           FOREIGN KEY(account_id) 
             REFERENCES accounts(id)
               ON DELETE CASCADE,
-        CONSTRAINT fk_tweet_id
-          FOREIGN KEY(tweet_id) 
-            REFERENCES tweets(id)
-              ON DELETE CASCADE
-    )';
+      CONSTRAINT fk_tweet_id
+        FOREIGN KEY(tweet_id) 
+          REFERENCES tweets(id)
+            ON DELETE CASCADE
+    );';
 
     pg_query_params($this->connection, $query, []);
     echo 'Table `Tweet mentions` created<br/>';
@@ -123,16 +119,17 @@ class TableController
     $query = 'CREATE TABLE tweet_hashtags (
       id          SERIAL PRIMARY KEY,
       hashtag_id  INTEGER,
-      tweet_id VARCHAR(20),
+      tweet_id    VARCHAR(20),
+
       CONSTRAINT fk_hashtag_id
           FOREIGN KEY(hashtag_id) 
             REFERENCES hashtags(id)
               ON DELETE CASCADE,
-        CONSTRAINT fk_tweet_id
-          FOREIGN KEY(tweet_id)
-            REFERENCES tweets(id)
-              ON DELETE CASCADE
-    )';
+      CONSTRAINT fk_tweet_id
+        FOREIGN KEY(tweet_id)
+          REFERENCES tweets(id)
+            ON DELETE CASCADE
+    );';
 
     pg_query_params($this->connection, $query, []);
     echo 'Table `Tweet hashtags` created<br/>';
@@ -143,7 +140,7 @@ class TableController
    */
   public function deleteTables()
   {
-    $query = 'DROP TABLE accounts, countries, hashtags, tweets, tweet_hashtags, tweet_mentions';
+    $query = 'DROP TABLE IF EXISTS accounts, countries, hashtags, tweets, tweet_hashtags, tweet_mentions';
 
     pg_query_params($this->connection, $query, []);
     echo 'Tables deleted<br/>';

@@ -9,11 +9,10 @@ class TweetImport extends BaseImport
     $tweet_id = $file_tweet['id_str'];
 
     $db_tweet = $this->fetchExistingTweet($tweet_id);
-
     
     if ($db_tweet) {
       // If tweet already exists -> Do nothing
-      echo "Tweet already exists: " . $db_tweet['id'] . "<br/>";
+      // echo "Tweet already exists: " . $db_tweet['id'] . "<br/>";
     } else {
       // If tweet doesn't exists -> Create it
       $this->createNewTweet($file_tweet, $tweet_meta);
@@ -38,7 +37,11 @@ class TweetImport extends BaseImport
     $format = 'Y-m-d H:i:s P';
     $created_at = date($format, strtotime($file_tweet['created_at']));
 
-    $coordinates = isset($file_tweet['coordinates']) ? "POINT({$file_tweet['coordinates'][1]} {$file_tweet['coordinates'][0]})" : NULL;//"ST_GeomFromText('POINT({$file_tweet['coordinates'][1]} {$file_tweet['coordinates'][0]})', 4326)" : null;
+    $coordinates = NULL;
+    if (isset($file_tweet['coordinates']['coordinates'][0]) && isset($file_tweet['coordinates']['coordinates'][1])) {
+      $coordinates = "POINT({$file_tweet['coordinates']['coordinates'][0]} {$file_tweet['coordinates']['coordinates'][1]})";
+    }
+
     $query = "INSERT INTO tweets (id, content, location, retweet_count, favorite_count, happened_at, author_id, country_id, parent_id) VALUES($1, $2, ST_GeomFromText($3, 4326), $4, $5, $6, $7, $8, $9);";
     $query_params = [
       $file_tweet['id_str'],
@@ -54,6 +57,6 @@ class TweetImport extends BaseImport
     pg_query_params($this->connection, $query, $query_params);
 
     // TODO: Remove - Only for debugging purposes
-    echo "Inserted new tweet: {$file_tweet['id']}<br/>";
+    // echo "Inserted new tweet: {$file_tweet['id']}<br/>";
   }
 }
